@@ -1,42 +1,50 @@
 import random
 
-def process_file(str):
+def process_file(filename):
 	dic = {}
-	f = open(str)
-	line = f.readlines()
-	if line == "":
+	f = open(filename)
+	contents = f.read()
+	f.close()
+	line = contents.split()
+	if line == []:
 		pass
 	else:
-		for len(line) n: #do this n-2 times, starting from 0 and adding 1 to start point each time
-		line = line.split()
-		pre1 = (line[0], line[1])
-		suf1 = line[2]
-		dic[pre1] = [suf1]
-		if len(line) > 3:
-			pre2 = (line[1], line[2])
-			suf2 = line[3]
-			dic[pre2] = [suf2]
-	f.close()
+		n = len(line)
+		for x in range(n-2):
+			prefix = line[x], line[x+1]
+			suffix = line[x+2]
+			if dic.get(prefix) == None:
+				dic[prefix] = [suffix]
+			else:
+				dic[prefix].append(suffix)
 	return dic
 
 def shift(t, n):
-	listy = list(t)
-	o = listy[1], n
-	return o
+	return t[1], n
 
 def build_sentence(dic):
 	prefix = random.choice(dic.keys())
-	suffix = dic[prefix]
-	tup = (prefix[0], prefix[1], suffix[0])
-	sentence = " ".join(tup)
-	return sentence
+	suffix = random.choice(dic[prefix])
+	words = [prefix[0], prefix[1], suffix]
+	while words[-1][-1] not in "?.!":
+		prefix = shift(prefix, suffix)
+		suffix = random.choice(dic[prefix])
+		words.append(suffix)
+		# if "?.!" in words and not words[-1][-1]:
+			
+	return " ".join(words)
+
+def build_paragraph(dic, n):
+	for y in range(n):
+		build_sentence(dic)
+	return "".join(build_sentence(dic))
+
 
 def main():
-	d = process_file("sample2.txt")
+	d = process_file("emma.txt")
 	x = build_sentence(d)
 	print x
-	# shift()
-
+	print build_paragraph(d, 4)
 
 if __name__ == "__main__":
 	main()
